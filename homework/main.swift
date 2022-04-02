@@ -39,6 +39,12 @@ enum TrailerType {
     case dryVan, stepDeck, refrigarator, flatbed, lowboy
 }
 
+enum TrunkVolume: Int {
+    case small = 1000
+    case medium = 2500
+    case large = 5000
+}
+
 
 class Car: CustomStringConvertible {
     static var numberOfCarsProduced = 0
@@ -69,14 +75,13 @@ class Car: CustomStringConvertible {
     }
     
     var description: String {
-        if transmission == nil {
-            return  "This car is going to be build soon. Please install options."
-        }
+        guard transmission != nil else { return  "This car is going to be build soon. Please install options."}
+        
         return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission!)."
     }
     
     
-    func installTransmission() {
+    private func installTransmission() {
         
         guard option != nil else {return print("Choose install option first")}
         
@@ -172,13 +177,12 @@ class SportCar: Car {
     var sportTransmission: SportOptions.Transmission?
     
     override var description: String {
-        if sportTransmission == nil {
-            return  "This car is going to be build soon. Please install options."
-        }
+        guard sportTransmission != nil else { return  "This car is going to be build soon. Please install options."}
+        
         return "This is \(brand) of \(productionYear) year, in \(color) color, with \(sportOption!) option installed, choosed transmission: \(sportTransmission!)."
     }
     
-    override func installTransmission() {
+    private func installTransmission() {
         
         guard sportOption != nil else {return print("Choose install sport option first")}
         
@@ -222,9 +226,17 @@ class Truck: Car {
     }
     
     var trailer: TrailerType
+    var trunkVolume: TrunkVolume
     
-    init(brand: String, productionYear: Int, color: String, trailer: TrailerType) {
+    override var description: String {
+        guard transmission != nil else { return  "This car is going to be build soon. Please install options."}
+        
+        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission!). Trailer type is \(trailer). Trunk volume is \(trunkVolume) = \(trunkVolume.rawValue) liters"
+    }
+    
+    init(brand: String, productionYear: Int, color: String, trailer: TrailerType, trunkVolume: TrunkVolume) {
         self.trailer = trailer
+        self.trunkVolume = trunkVolume
         super.init(brand: brand, productionYear: productionYear, color: color)
     }
 }
@@ -234,8 +246,9 @@ print(rapid.description)
 rapid.openCloseDoors()
 rapid.option = .comfort
 rapid.drive()
+print("_____________________________________\\\\")
 rapid.startStopEngine()
-rapid.installTransmission()
+//rapid.installTransmission()
 print(rapid.description)
 rapid.startStopEngine()
 rapid.startStopEngine()
@@ -258,7 +271,7 @@ let buggati = SportCar(brand: "Buggati", productionYear: 2022, color: "Red")
 print(buggati.description)
 print("_____________________________________\\\\")
 buggati.drive()
-buggati.installTransmission()
+//buggati.installTransmission()
 buggati.sportOption = .luxe
 print("_____________________________________\\\\")
 buggati.drive()
@@ -271,7 +284,7 @@ mazeratti.sportOption = .sport
 print(mazeratti.description)
 
 print("_________________________________")
-let kamaz = Truck(brand: "Kamaz", productionYear: 2018, color: "Orange", trailer: .refrigarator)
+let kamaz = Truck(brand: "Kamaz", productionYear: 2018, color: "Orange", trailer: .refrigarator, trunkVolume: .large)
 kamaz.option = .basic
 print(kamaz.description)
 kamaz.option = .premium
