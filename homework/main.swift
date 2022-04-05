@@ -201,6 +201,8 @@ class Car: CustomStringConvertible {
 
 final class SportCar: Car {
     
+    var sportCar: PrototypeSportCar?
+    
     var sportOption: SportOptions? {
         didSet {
             installTransmission()
@@ -273,6 +275,15 @@ final class Truck: Car {
     }
 }
 
+final class PrototypeSportCar {
+    
+    weak var prototype: SportCar?
+
+    deinit {
+        print("Prototype wasn't good. We'll try again later.")
+    }
+}
+
 let rapid = Car(brand: "Skoda", productionYear: 2020, color: "Gold")
 print(rapid.description)
 rapid.openCloseDoors()
@@ -331,4 +342,13 @@ kamaz.openCloseWindows()
 kamaz.startStopEngine()
 kamaz.openCloseDoors()
 kamaz.drive()
+
+var sportPrototype: PrototypeSportCar?
+var baseForPrototype: SportCar?
+sportPrototype = PrototypeSportCar()
+baseForPrototype = SportCar(brand: "Mustang", productionYear: 2023, color: "Black")
+sportPrototype?.prototype = baseForPrototype
+
+sportPrototype = nil
+baseForPrototype = nil
 
