@@ -8,41 +8,71 @@
 import Foundation
 
 enum Transmission {
-    case manual, automatic, robot, variator
+    case manual
+    case automatic
+    case robot
+    case variator
 }
 
 enum EngineState {
-    case on, off
+    case on
+    case off
 }
 
 enum WindowsDoorState {
-    case open, closed
+    case open
+    case closed
 }
 
 enum Options {
-    case basic, comfort, premium, sport
+    case basic
+    case comfort
+    case premium
+    case sport
     
     enum Transmission {
-        case manual, automatic, robot, variator
+        case manual
+        case automatic
+        case robot
+        case variator
     }
 }
 
 enum SportOptions {
-    case premium, luxe, sport
+    case premium
+    case luxe
+    case sport
     
     enum Transmission {
-        case automatic, robot, superGTManual
+        case automatic
+        case robot
+        case superGTManual
     }
 }
 
 enum TrailerType {
-    case dryVan, stepDeck, refrigarator, flatbed, lowboy
+    case dryVan
+    case stepDeck
+    case refrigarator
+    case flatbed
+    case lowboy
 }
 
-enum TrunkVolume: Int {
-    case small = 1000
-    case medium = 2500
-    case large = 5000
+enum TrunkVolume {
+    case small
+    case medium
+    case large
+    
+    var trunkVolume: Int {
+        switch self {
+        case .small:
+            return 1000
+        case .medium:
+            return 2500
+        case .large:
+            return 5000
+        }
+    }
 }
 
 
@@ -70,15 +100,15 @@ class Car: CustomStringConvertible {
     }
     
     deinit {
-        print("The \(brand) and \(Car.self) is going to recycling")
+        print("The \(brand) car is going to recycling")
         Car.numberOfCarsProduced -= 1
     }
     
     var description: String {
-        guard transmission != nil else { return  "This car is going to be build soon. Please install options."}
+        guard let transmission = transmission else { return  "This car is going to be build soon. Please install options."}
         
-        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission!)."
-    }
+        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission)."
+    } //тут force unwrap безопасен так как если есть transmission, то option уже обязан быть
     
     
     private func installTransmission() {
@@ -120,6 +150,7 @@ class Car: CustomStringConvertible {
     }
     
     func openCloseWindows() {
+        
         switch isWindowsOpened {
         case .open:
             isWindowsOpened = .closed
@@ -136,6 +167,7 @@ class Car: CustomStringConvertible {
     }
     
     func openCloseDoors() {
+        
         switch isDoorsOpened {
         case .open:
             isDoorsOpened = .closed
@@ -167,7 +199,7 @@ class Car: CustomStringConvertible {
     
 }
 
-class SportCar: Car {
+final class SportCar: Car {
     
     var sportOption: SportOptions? {
         didSet {
@@ -177,9 +209,9 @@ class SportCar: Car {
     var sportTransmission: SportOptions.Transmission?
     
     override var description: String {
-        guard sportTransmission != nil else { return  "This car is going to be build soon. Please install options."}
+        guard let sportTransmission = sportTransmission else { return  "This car is going to be build soon. Please install options."}
         
-        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(sportOption!) option installed, choosed transmission: \(sportTransmission!)."
+        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(sportOption!) option installed, choosed transmission: \(sportTransmission)."
     }
     
     private func installTransmission() {
@@ -214,7 +246,7 @@ class SportCar: Car {
     }
 }
 
-class Truck: Car {
+final class Truck: Car {
     
     override var option: Options? {
         didSet {
@@ -229,9 +261,9 @@ class Truck: Car {
     var trunkVolume: TrunkVolume
     
     override var description: String {
-        guard transmission != nil else { return  "This car is going to be build soon. Please install options."}
+        guard let transmission = transmission else { return  "This car is going to be build soon. Please install options."}
         
-        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission!). Trailer type is \(trailer). Trunk volume is \(trunkVolume) = \(trunkVolume.rawValue) liters"
+        return "This is \(brand) of \(productionYear) year, in \(color) color, with \(option!) option installed, choosed transmission: \(transmission). Trailer type is \(trailer). Trunk volume is \(trunkVolume) = \(trunkVolume.trunkVolume) liters"
     }
     
     init(brand: String, productionYear: Int, color: String, trailer: TrailerType, trunkVolume: TrunkVolume) {
@@ -264,7 +296,11 @@ var rapidGT = rapid
 print(rapidGT.description)
 rapidGT.color = "Green"
 print(rapidGT.description)
-print(rapid.description) //изменился цвет, так как классы это reference type
+print(rapid.description) //изменился цвет, так как обекты класса это reference type
+var prototype: Car?
+prototype = Car(brand: "Secret", productionYear: 2023, color: "Ruby")
+print(prototype!.description)
+prototype = nil //деинициализирован и удален из памяти
 
 let buggati = SportCar(brand: "Buggati", productionYear: 2022, color: "Red")
 
