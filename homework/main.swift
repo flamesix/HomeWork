@@ -38,6 +38,7 @@ class BookingService {
         money += amount
     }
     
+    ///Method throws Error
     func buyTicket(to destination: String) throws -> Destination? {
         
         guard let flight = tickets[destination] else { throw BookingServiceErrors.noSuchDestination}
@@ -51,6 +52,22 @@ class BookingService {
         money -= flight.price
         
         return flight.destination
+    }
+    
+    ///Method get result or an error
+    func buyTicketCollectError(to destination: String) -> (Destination?, BookingServiceErrors?) {
+        
+        guard let flight = tickets[destination] else { return (nil, BookingServiceErrors.noSuchDestination)}
+        guard flight.amountOfSeats > 0 else { return (nil, BookingServiceErrors.seatUnaviable)}
+        guard money >= flight.price else { return (nil, BookingServiceErrors.notEnoughMoney)}
+        
+        var newFlight = flight
+        
+        newFlight.amountOfSeats -= 1
+        tickets[destination] = newFlight
+        money -= flight.price
+        
+        return (newFlight.destination, nil)
     }
 }
 
@@ -97,4 +114,14 @@ do {
 }
 
 print("Money left: \(ticket.money)")
+print("------------------------------------------------")
 
+let newTicket = BookingService()
+
+let ticketToMoscow = newTicket.buyTicketCollectError(to: "Moscow")
+
+if let ticketToMoscow = ticketToMoscow.0 {
+    print("You succesfully bought  to destination: \(ticketToMoscow.name), flight number: \(ticketToMoscow.flightNumber)")
+} else if let error = ticketToMoscow.1 {
+    print(error)
+}
